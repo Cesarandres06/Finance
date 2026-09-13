@@ -1,0 +1,817 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Presupuesto de Isabella</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Work+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+  :root{
+    color-scheme: light;
+    --bg:            #EEF1EA;
+    --surface:       #FFFFFF;
+    --surface-alt:   #E2E8DC;
+    --ink:           #16211D;
+    --ink-secondary: #55645A;
+    --ink-muted:     #8A968B;
+    --line:          rgba(22,33,29,0.12);
+    --accent:        #8E2A45;
+    --accent-ink:    #FFFFFF;
+    --accent-soft:   #F4DCE2;
+
+    --status-good:     #0ca30c;
+    --status-warning:  #fab219;
+    --status-critical: #d03b3b;
+    --status-good-soft:     #E1F2DE;
+    --status-warning-soft:  #FCEACB;
+    --status-critical-soft: #F7DCDA;
+
+    --cat-0: #2a78d6; --cat-1: #eb6834; --cat-2: #1baf7a; --cat-3: #eda100;
+    --cat-4: #e87ba4; --cat-5: #008300; --cat-6: #4a3aa7; --cat-7: #e34948;
+
+    --font-display: "Fraunces", Georgia, serif;
+    --font-body: "Work Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+    --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      color-scheme: dark;
+      --bg:            #12160F;
+      --surface:       #1B221A;
+      --surface-alt:   #242C22;
+      --ink:           #F2F1E9;
+      --ink-secondary: #ABB6A6;
+      --ink-muted:     #7C877A;
+      --line:          rgba(242,241,233,0.14);
+      --accent:        #E38EA3;
+      --accent-ink:    #2B0F16;
+      --accent-soft:   #3A2129;
+      --status-good-soft:     #16301A;
+      --status-warning-soft:  #3A2C10;
+      --status-critical-soft: #3A1917;
+      --cat-0: #3987e5; --cat-1: #d95926; --cat-2: #199e70; --cat-3: #c98500;
+      --cat-4: #d55181; --cat-5: #1fae1f; --cat-6: #9085e9; --cat-7: #e66767;
+    }
+  }
+  :root[data-theme="dark"]{
+    color-scheme: dark;
+    --bg:            #12160F;
+    --surface:       #1B221A;
+    --surface-alt:   #242C22;
+    --ink:           #F2F1E9;
+    --ink-secondary: #ABB6A6;
+    --ink-muted:     #7C877A;
+    --line:          rgba(242,241,233,0.14);
+    --accent:        #E38EA3;
+    --accent-ink:    #2B0F16;
+    --accent-soft:   #3A2129;
+    --status-good-soft:     #16301A;
+    --status-warning-soft:  #3A2C10;
+    --status-critical-soft: #3A1917;
+    --cat-0: #3987e5; --cat-1: #d95926; --cat-2: #199e70; --cat-3: #c98500;
+    --cat-4: #d55181; --cat-5: #1fae1f; --cat-6: #9085e9; --cat-7: #e66767;
+  }
+
+  *{ box-sizing: border-box; }
+  html, body{ height: 100%; }
+  body{
+    margin:0;
+    background: var(--bg);
+    background-image: repeating-linear-gradient(45deg, var(--line) 0, var(--line) 1px, transparent 1px, transparent 34px);
+    color: var(--ink);
+    font-family: var(--font-body);
+    font-size: 15px;
+    line-height: 1.5;
+  }
+  .page{ max-width: 980px; margin: 0 auto; padding: 28px 20px 64px; }
+  a{ color: inherit; }
+
+  .eyebrow{
+    font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em;
+    text-transform: uppercase; color: var(--ink-muted);
+  }
+
+  /* ---------- Login screen ---------- */
+  .login-wrap{
+    min-height: 100%;
+    display:flex; align-items:center; justify-content:center;
+    padding: 24px 20px;
+  }
+  .login-card{
+    width: 100%; max-width: 380px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 28px 26px 24px;
+  }
+  .login-card h1{
+    font-family: var(--font-display); font-weight: 600; font-size: 24px;
+    margin: 4px 0 4px;
+  }
+  .login-card p.hint{ font-size: 13px; color: var(--ink-secondary); margin: 0 0 20px; }
+  .field{ margin-bottom: 14px; }
+  .field label{ display:block; font-size: 12px; font-weight: 600; color: var(--ink-secondary); margin-bottom: 5px; }
+  .field input, .field select{
+    width: 100%; font: 14px var(--font-body); color: inherit;
+    background: var(--surface-alt); border: 1px solid var(--line); border-radius: 8px;
+    padding: 10px 11px;
+  }
+  .field input:focus, .field select:focus{ outline: 2px solid var(--accent); outline-offset: 1px; }
+  .login-submit{
+    width: 100%; margin-top: 4px;
+    font: 600 14px var(--font-body); color: var(--accent-ink);
+    background: var(--accent); border: 1px solid var(--accent); border-radius: 9px;
+    padding: 11px; cursor: pointer;
+  }
+  .login-submit:hover{ opacity: 0.92; }
+  .login-submit[disabled]{ opacity: 0.6; cursor: default; }
+  .login-error{
+    background: var(--status-critical-soft); color: var(--status-critical);
+    border-radius: 8px; padding: 9px 11px; font-size: 12.5px; margin-bottom: 14px;
+  }
+  .login-foot{ text-align:center; font-size: 11px; color: var(--ink-muted); margin-top: 18px; }
+
+  /* ---------- Shared app chrome ---------- */
+  .btn{
+    font-family: var(--font-body); font-size: 13px; font-weight: 600;
+    border: 1px solid var(--line); background: var(--surface); color: var(--ink);
+    border-radius: 8px; padding: 8px 14px; cursor: pointer;
+  }
+  .btn:hover{ border-color: var(--accent); }
+  .btn:focus-visible, input:focus-visible, select:focus-visible, button:focus-visible{
+    outline: 2px solid var(--accent); outline-offset: 2px;
+  }
+  .btn-ghost{ background: transparent; border-color: transparent; color: var(--ink-muted); }
+  .btn-ghost:hover{ color: var(--status-critical); border-color: var(--line); }
+  .btn-primary{ background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  .btn-primary:hover{ opacity: 0.92; }
+  .btn-danger-armed{ background: var(--status-critical-soft); border-color: var(--status-critical); color: var(--status-critical); }
+  .btn-sm{ padding: 5px 10px; font-size: 12px; border-radius: 6px; }
+
+  .topbar{
+    display:flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between;
+    gap: 12px 24px; margin-bottom: 22px;
+  }
+  .topbar-actions{ display:flex; align-items:center; gap: 8px; flex-wrap: wrap; }
+  .topbar h1{
+    font-family: var(--font-display); font-weight: 600; font-size: 28px; margin: 2px 0 0; text-wrap: balance;
+  }
+  .topbar h1 .name-input, .topbar h1 .month-input{
+    font: inherit; color: inherit; background: transparent; border: none;
+    border-bottom: 1px dashed transparent; padding: 0 2px;
+  }
+  .topbar h1 input:hover, .topbar h1 input:focus{ border-bottom-color: var(--line); outline: none; }
+  .topbar h1 .name-input{ max-width: 10ch; }
+  .topbar h1 .month-input{ max-width: 19ch; }
+
+  select.currency-select{
+    font: 600 12px var(--font-mono); color: var(--ink-secondary);
+    background: var(--surface-alt); border: 1px solid var(--line); border-radius: 7px;
+    padding: 6px 8px; cursor: pointer;
+  }
+
+  .hero{
+    border-radius: 16px; padding: 22px 24px; margin-bottom: 20px; border: 1px solid var(--line);
+    display:flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px;
+  }
+  .hero.status-good{ background: var(--status-good-soft); }
+  .hero.status-warning{ background: var(--status-warning-soft); }
+  .hero.status-critical{ background: var(--status-critical-soft); }
+  .hero-label{ display:flex; align-items:center; gap: 8px; font-weight: 600; font-size: 14px; }
+  .hero-figure{ font-family: var(--font-body); font-weight: 700; font-size: 44px; letter-spacing: -0.01em; margin: 2px 0 4px; }
+  .status-good .hero-figure, .status-good .hero-label{ color: var(--status-good); }
+  .status-warning .hero-figure, .status-warning .hero-label{ color: #8a5a00; }
+  :root[data-theme="dark"] .status-warning .hero-figure, :root[data-theme="dark"] .status-warning .hero-label{ color: var(--status-warning); }
+  @media (prefers-color-scheme: dark){ :root:not([data-theme="light"]) .status-warning .hero-figure, :root:not([data-theme="light"]) .status-warning .hero-label{ color: var(--status-warning); } }
+  .status-critical .hero-figure, .status-critical .hero-label{ color: var(--status-critical); }
+  .hero-sub{ font-size: 13px; color: var(--ink-secondary); font-variant-numeric: tabular-nums; }
+  .hero-breakdown{ display:flex; gap: 18px; flex-wrap: wrap; font-family: var(--font-mono); font-size: 12px; color: var(--ink-secondary); }
+  .hero-breakdown b{ color: var(--ink); font-weight: 500; }
+
+  .grid{ display:grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media (max-width: 700px){ .grid{ grid-template-columns: 1fr; } }
+
+  .card{ background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 18px 16px; }
+  .card h2{ font-family: var(--font-display); font-weight: 600; font-size: 17px; margin: 0 0 4px; }
+  .card .card-hint{ font-size: 12px; color: var(--ink-muted); margin: 0 0 14px; }
+
+  .row{ display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); }
+  .row:last-of-type{ border-bottom: none; }
+  .row input[type=text]{
+    flex: 1 1 auto; min-width: 0; font: inherit; color: inherit; background: transparent;
+    border: none; padding: 4px 2px; border-bottom: 1px dashed transparent;
+  }
+  .row input[type=text]:hover, .row input[type=text]:focus{ border-bottom-color: var(--line); outline: none; }
+  .row .amount-input{
+    width: 92px; flex: 0 0 auto; font: 500 13px/1.4 var(--font-mono); font-variant-numeric: tabular-nums;
+    text-align: right; color: inherit; background: var(--surface-alt); border: 1px solid var(--line);
+    border-radius: 6px; padding: 5px 8px;
+  }
+  .row .amount-input:focus{ outline: 2px solid var(--accent); outline-offset: 1px; }
+  .curr-suffix{ font-size: 11px; color: var(--ink-muted); }
+
+  .mesada-row{
+    display:flex; align-items:center; justify-content: space-between; gap: 10px;
+    padding-bottom: 12px; margin-bottom: 8px; border-bottom: 1px solid var(--line);
+  }
+  .mesada-row label{ font-weight: 600; font-size: 13px; }
+
+  .subtotal-row{
+    display:flex; justify-content: space-between; padding-top: 10px; margin-top: 4px;
+    font-weight: 600; font-size: 13px; font-variant-numeric: tabular-nums;
+  }
+
+  .add-link{
+    margin-top: 10px; background: none; border: none; color: var(--accent);
+    font-family: var(--font-body); font-weight: 600; font-size: 13px; cursor: pointer; padding: 4px 2px;
+  }
+  .add-link:hover{ text-decoration: underline; }
+
+  .cat-block{ padding: 10px 0; border-bottom: 1px solid var(--line); }
+  .cat-block:last-of-type{ border-bottom: none; }
+  .cat-block-head{ display:flex; align-items:center; gap: 8px; margin-bottom: 6px; }
+  .cat-dot{ width: 9px; height: 9px; border-radius: 50%; flex: 0 0 auto; box-shadow: 0 0 0 2px var(--surface); }
+  .cat-block-head input[type=text]{
+    flex: 1 1 auto; min-width: 0; font: 600 13px var(--font-body); color: inherit; background: transparent;
+    border: none; border-bottom: 1px dashed transparent; padding: 2px;
+  }
+  .cat-block-head input[type=text]:hover, .cat-block-head input[type=text]:focus{ border-bottom-color: var(--line); outline: none; }
+
+  .meter-track{ height: 10px; border-radius: 5px; background: var(--surface-alt); overflow: hidden; margin: 6px 0 5px; }
+  .meter-fill{ height: 100%; border-radius: 5px; }
+  .meter-fill.status-good{ background: var(--status-good); }
+  .meter-fill.status-warning{ background: var(--status-warning); }
+  .meter-fill.status-critical{ background: var(--status-critical); }
+
+  .cat-block-foot{
+    display:flex; align-items:center; justify-content: space-between; font-size: 12px;
+    color: var(--ink-secondary); font-variant-numeric: tabular-nums;
+  }
+  .cat-block-foot .budget-wrap{ display:flex; align-items:center; gap:4px; }
+
+  .tx-form{ display:grid; grid-template-columns: 140px 1fr 90px auto; gap: 8px; margin: 14px 0 4px; }
+  @media (max-width: 560px){ .tx-form{ grid-template-columns: 1fr 1fr; } }
+  .tx-form select, .tx-form input{
+    font: 13px var(--font-body); color: inherit; background: var(--surface-alt); border: 1px solid var(--line);
+    border-radius: 7px; padding: 7px 8px; width: 100%;
+  }
+  .tx-form input[name=amount]{ font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  @media (max-width: 560px){ .tx-form button[type=submit]{ grid-column: 1 / -1; } }
+
+  .tx-list{ margin-top: 4px; }
+  .tx-row{ display:flex; align-items:center; gap: 10px; padding: 8px 0; border-bottom: 1px solid var(--line); font-size: 13px; }
+  .tx-row:last-child{ border-bottom: none; }
+  .tx-date{ font-family: var(--font-mono); font-size: 11px; color: var(--ink-muted); width: 44px; flex: 0 0 auto; }
+  .tx-cat{ display:flex; align-items:center; gap:6px; width: 84px; flex: 0 0 auto; font-size: 12px; color: var(--ink-secondary); }
+  .tx-desc{ flex: 1 1 auto; min-width: 0; overflow-wrap: anywhere; }
+  .tx-amount{ font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-weight: 500; flex: 0 0 auto; }
+  .tx-empty{ color: var(--ink-muted); font-size: 13px; padding: 10px 0; }
+  .tx-desc-empty{ color: var(--ink-muted); }
+
+  .footer-bar{
+    display:flex; justify-content: space-between; align-items:center; flex-wrap: wrap; gap: 10px;
+    margin-top: 22px; padding-top: 14px; border-top: 1px solid var(--line); font-size: 12px; color: var(--ink-muted);
+  }
+  .save-status{ display:flex; align-items:center; gap: 6px; }
+  .save-dot{ width: 6px; height: 6px; border-radius: 50%; background: var(--status-good); }
+  .save-dot.saving{ background: var(--status-warning); }
+  .save-dot.err{ background: var(--status-critical); }
+
+  .tx-list-card{ margin-bottom: 0; }
+  .credit{ text-align: center; font-size: 11px; color: var(--ink-muted); margin-top: 10px; }
+
+  .account-panel{
+    position: fixed; inset: 0; background: rgba(0,0,0,0.35); display:flex;
+    align-items:center; justify-content:center; padding: 20px; z-index: 20;
+  }
+  .account-card{
+    width: 100%; max-width: 360px; background: var(--surface); border: 1px solid var(--line);
+    border-radius: 14px; padding: 22px;
+  }
+  .account-card h2{ font-family: var(--font-display); font-size: 18px; margin: 0 0 4px; }
+  .account-card p.hint{ font-size: 12.5px; color: var(--ink-secondary); margin: 0 0 16px; }
+  .account-card .row-btns{ display:flex; gap: 8px; margin-top: 14px; justify-content: flex-end; }
+
+  .center-msg{ display:flex; align-items:center; justify-content:center; min-height: 100%; padding: 24px; color: var(--ink-secondary); font-size: 14px; }
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.js"></script>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  const SUPABASE_URL = "https://zapyyrpbxvvpewfpadtm.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_vtYtkwV4y5-TMXemBBYuSA_kkvhgebP";
+  const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const CURRENCIES = [
+    { code: "EUR", label: "Euro",                locale: "es-ES" },
+    { code: "USD", label: "Dólar estadounidense", locale: "en-US" },
+    { code: "GBP", label: "Libra esterlina",      locale: "en-GB" },
+    { code: "MXN", label: "Peso mexicano",        locale: "es-MX" },
+    { code: "COP", label: "Peso colombiano",      locale: "es-CO" },
+    { code: "ARS", label: "Peso argentino",       locale: "es-AR" },
+    { code: "PEN", label: "Sol peruano",          locale: "es-PE" },
+    { code: "CLP", label: "Peso chileno",         locale: "es-CL" },
+  ];
+
+  const app = document.getElementById("app");
+
+  const uid = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+  const todayISO = () => new Date().toISOString().slice(0, 10);
+  const escapeHtml = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  // ============ Auth gate ============
+  let session = null;
+  let loginError = "";
+  let loginBusy = false;
+
+  function renderLogin(){
+    app.innerHTML = `
+      <div class="login-wrap">
+        <div class="login-card">
+          <div class="eyebrow">Presupuesto personal</div>
+          <h1>Iniciar sesión</h1>
+          <p class="hint">Acceso privado — solo para Isabella y César.</p>
+          ${loginError ? `<div class="login-error">${escapeHtml(loginError)}</div>` : ""}
+          <form id="login-form">
+            <div class="field">
+              <label for="login-email">Correo</label>
+              <input id="login-email" name="email" type="email" required autocomplete="username">
+            </div>
+            <div class="field">
+              <label for="login-password">Contraseña</label>
+              <input id="login-password" name="password" type="password" required autocomplete="current-password">
+            </div>
+            <button class="login-submit" type="submit" ${loginBusy ? "disabled" : ""}>${loginBusy ? "Entrando…" : "Entrar"}</button>
+          </form>
+          <div class="login-foot">Creado por César Espín</div>
+        </div>
+      </div>
+    `;
+    document.getElementById("login-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(e.target);
+      loginBusy = true; loginError = ""; renderLogin();
+      const { error } = await sb.auth.signInWithPassword({
+        email: fd.get("email").trim(),
+        password: fd.get("password"),
+      });
+      loginBusy = false;
+      if (error){
+        loginError = error.message === "Invalid login credentials"
+          ? "Correo o contraseña incorrectos."
+          : error.message;
+        renderLogin();
+      }
+      // on success, onAuthStateChange below handles the transition
+    });
+  }
+
+  function renderLoading(text){
+    app.innerHTML = `<div class="center-msg">${escapeHtml(text)}</div>`;
+  }
+
+  // ============ Budget app ============
+  let householdId = null;
+  let state = null;
+  let saveState = "idle"; // idle | saving | saved | error
+  let pendingDeletes = new Set();
+  let focusHint = null;
+  let saveTimer = null;
+  let realtimeChannel = null;
+  let showAccountPanel = false;
+  let accountError = "";
+  let accountBusy = false;
+
+  function currencyMeta(){
+    return CURRENCIES.find((c) => c.code === (state && state.currency)) || CURRENCIES[0];
+  }
+  function money(n){
+    const meta = currencyMeta();
+    return new Intl.NumberFormat(meta.locale, { style: "currency", currency: meta.code, minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+  }
+  const fmtShortDate = (iso) => {
+    const d = new Date(iso + "T00:00:00");
+    if (isNaN(d)) return iso;
+    return new Intl.DateTimeFormat("es-ES", { day: "numeric", month: "short" }).format(d).replace(".", "");
+  };
+
+  function totals(){
+    const totalFixed = state.fixed.reduce((s, f) => s + (Number(f.amount) || 0), 0);
+    const spentByCat = {};
+    for (const c of state.categories) spentByCat[c.id] = 0;
+    for (const t of state.transactions){
+      if (spentByCat[t.catId] === undefined) spentByCat[t.catId] = 0;
+      spentByCat[t.catId] += Number(t.amount) || 0;
+    }
+    const totalVariable = Object.values(spentByCat).reduce((s, v) => s + v, 0);
+    const saldo = (Number(state.mesada) || 0) - totalFixed - totalVariable;
+    return { totalFixed, spentByCat, totalVariable, saldo };
+  }
+  function heroStatus(saldo){
+    const mesada = Number(state.mesada) || 0;
+    if (saldo < 0) return "critical";
+    if (mesada > 0 && saldo < mesada * 0.2) return "warning";
+    return "good";
+  }
+  function meterStatus(spent, budget){
+    if (budget <= 0) return spent > 0 ? "critical" : "good";
+    const ratio = spent / budget;
+    if (ratio > 1) return "critical";
+    if (ratio > 0.7) return "warning";
+    return "good";
+  }
+  function descHtml(desc){
+    if (desc) return escapeHtml(desc);
+    return '<span class="tx-desc-empty">Sin descripción</span>';
+  }
+
+  function render(){
+    if (!state){ renderLoading("Cargando tu presupuesto…"); return; }
+    const { totalFixed, spentByCat, totalVariable, saldo } = totals();
+    const hStatus = heroStatus(saldo);
+    const heroCopy = {
+      good: "Vas bien este mes",
+      warning: "Vigila el gasto que queda de mes",
+      critical: "Te has pasado del presupuesto"
+    }[hStatus];
+    const heroIcon = { good: "✓", warning: "⚠", critical: "✕" }[hStatus];
+
+    app.innerHTML = `
+      <div class="page">
+        <div class="topbar">
+          <div>
+            <div class="eyebrow">Presupuesto personal</div>
+            <h1>
+              <input class="name-input" type="text" value="${escapeHtml(state.owner)}" data-field="owner" aria-label="Nombre">
+              &nbsp;—&nbsp;<input class="month-input" type="text" value="${escapeHtml(state.month)}" data-field="month" aria-label="Mes">
+            </h1>
+          </div>
+          <div class="topbar-actions">
+            <select class="currency-select" data-field="currency" aria-label="Moneda">
+              ${CURRENCIES.map((c) => `<option value="${c.code}" ${c.code === state.currency ? "selected" : ""}>${c.code} — ${escapeHtml(c.label)}</option>`).join("")}
+            </select>
+            <button class="btn ${pendingDeletes.has("__reset__") ? "btn-danger-armed" : ""}" data-action="reset-month">
+              ${pendingDeletes.has("__reset__") ? "¿Confirmar mes nuevo?" : "Empezar mes nuevo"}
+            </button>
+            <button class="btn btn-ghost btn-sm" data-action="open-account" aria-label="Cuenta">⚙ Cuenta</button>
+          </div>
+        </div>
+
+        <div class="hero status-${hStatus}">
+          <div>
+            <div class="hero-label"><span aria-hidden="true">${heroIcon}</span><span>${heroCopy}</span></div>
+            <div class="hero-figure">${money(saldo)}</div>
+            <div class="hero-sub">Saldo disponible de tu mesada este mes</div>
+          </div>
+          <div class="hero-breakdown">
+            <div>Mesada<br><b>${money(Number(state.mesada) || 0)}</b></div>
+            <div>Gastos fijos<br><b>${money(totalFixed)}</b></div>
+            <div>Gastado variable<br><b>${money(totalVariable)}</b></div>
+          </div>
+        </div>
+
+        <div class="grid">
+          <div class="card">
+            <h2>Mesada y gastos fijos</h2>
+            <p class="card-hint">Lo que recibes y lo que se va cada mes sin pensarlo.</p>
+
+            <div class="mesada-row">
+              <label for="mesada-input">Mesada mensual</label>
+              <div>
+                <input id="mesada-input" class="amount-input" type="number" step="0.01" min="0" value="${Number(state.mesada) || 0}" data-field="mesada">
+                <span class="curr-suffix">${currencyMeta().code}</span>
+              </div>
+            </div>
+
+            ${state.fixed.map((f) => `
+              <div class="row" data-fixed-id="${f.id}">
+                <input type="text" value="${escapeHtml(f.name)}" data-field="fixed-name" data-id="${f.id}" aria-label="Nombre del gasto">
+                <input class="amount-input" type="number" step="0.01" min="0" value="${Number(f.amount) || 0}" data-field="fixed-amount" data-id="${f.id}" aria-label="Importe">
+                <button class="btn btn-ghost btn-sm ${pendingDeletes.has(f.id) ? "btn-danger-armed" : ""}" data-action="delete-fixed" data-id="${f.id}" aria-label="Eliminar ${escapeHtml(f.name)}">
+                  ${pendingDeletes.has(f.id) ? "Confirmar" : "×"}
+                </button>
+              </div>
+            `).join("")}
+
+            <button class="add-link" data-action="add-fixed">+ Añadir gasto fijo</button>
+            <div class="subtotal-row"><span>Total fijos</span><span>${money(totalFixed)}</span></div>
+          </div>
+
+          <div class="card">
+            <h2>Gastos variables</h2>
+            <p class="card-hint">Comida, salidas y lo que decides cada semana.</p>
+
+            ${state.categories.map((c) => {
+              const spent = spentByCat[c.id] || 0;
+              const budget = Number(c.budget) || 0;
+              const mStatus = meterStatus(spent, budget);
+              const pct = budget > 0 ? Math.min(100, (spent / budget) * 100) : (spent > 0 ? 100 : 0);
+              return `
+              <div class="cat-block" data-cat-id="${c.id}">
+                <div class="cat-block-head">
+                  <span class="cat-dot" style="background:var(--cat-${c.slot % 8})"></span>
+                  <input type="text" value="${escapeHtml(c.name)}" data-field="cat-name" data-id="${c.id}" aria-label="Nombre de categoría">
+                  <button class="btn btn-ghost btn-sm ${pendingDeletes.has(c.id) ? "btn-danger-armed" : ""}" data-action="delete-cat" data-id="${c.id}" aria-label="Eliminar categoría ${escapeHtml(c.name)}">
+                    ${pendingDeletes.has(c.id) ? "Confirmar" : "×"}
+                  </button>
+                </div>
+                <div class="meter-track"><div class="meter-fill status-${mStatus}" style="width:${pct}%"></div></div>
+                <div class="cat-block-foot">
+                  <span>${money(spent)} de
+                    <span class="budget-wrap"><input class="amount-input" style="width:64px" type="number" step="0.01" min="0" value="${budget}" data-field="cat-budget" data-id="${c.id}" aria-label="Presupuesto de ${escapeHtml(c.name)}">${currencyMeta().code}</span>
+                  </span>
+                  <span>${budget > 0 ? Math.round((spent / budget) * 100) : 0}%</span>
+                </div>
+              </div>
+            `;
+            }).join("")}
+
+            ${state.categories.length < 8 ? `<button class="add-link" data-action="add-cat">+ Añadir categoría</button>` : ""}
+
+            <form class="tx-form" data-form="add-transaction">
+              <input type="date" name="date" value="${todayISO()}" max="${todayISO()}" aria-label="Fecha" required>
+              <div class="cat-select-wrap">
+                <select name="catId" aria-label="Categoría" ${state.categories.length === 0 ? "disabled" : ""}>
+                  ${state.categories.map((c) => `<option value="${c.id}">${escapeHtml(c.name)}</option>`).join("")}
+                </select>
+              </div>
+              <input type="number" name="amount" step="0.01" min="0.01" placeholder="0,00" aria-label="Importe" required ${state.categories.length === 0 ? "disabled" : ""}>
+              <button type="submit" class="btn btn-primary" ${state.categories.length === 0 ? "disabled" : ""}>Añadir</button>
+              <input type="text" name="desc" placeholder="Descripción (opcional)" aria-label="Descripción" style="grid-column: 1 / -1;">
+            </form>
+          </div>
+        </div>
+
+        <div class="card tx-list-card">
+          <h2>Movimientos de ${escapeHtml(state.month)}</h2>
+          <p class="card-hint">Los más recientes primero.</p>
+          <div class="tx-list">
+            ${state.transactions.length === 0 ? `<div class="tx-empty">Aún no hay movimientos este mes.</div>` : ""}
+            ${[...state.transactions].sort((a, b) => (b.date + b.id).localeCompare(a.date + a.id)).map((t) => {
+              const cat = state.categories.find((c) => c.id === t.catId);
+              return `
+              <div class="tx-row" data-tx-id="${t.id}">
+                <span class="tx-date">${fmtShortDate(t.date)}</span>
+                <span class="tx-cat"><span class="cat-dot" style="background:${cat ? "var(--cat-" + (cat.slot % 8) + ")" : "var(--ink-muted)"}"></span>${cat ? escapeHtml(cat.name) : "—"}</span>
+                <span class="tx-desc">${descHtml(t.desc)}</span>
+                <span class="tx-amount">${money(Number(t.amount) || 0)}</span>
+                <button class="btn btn-ghost btn-sm" data-action="delete-tx" data-id="${t.id}" aria-label="Eliminar movimiento">×</button>
+              </div>
+            `;
+            }).join("")}
+          </div>
+        </div>
+
+        <div class="footer-bar">
+          <span>Sesión iniciada como ${escapeHtml(session.user.email)}</span>
+          <span class="save-status">
+            <span class="save-dot ${saveState === "saving" ? "saving" : (saveState === "error" ? "err" : "")}"></span>
+            ${saveState === "saving" ? "Guardando…" : saveState === "error" ? "No se pudo guardar" : "Guardado"}
+          </span>
+        </div>
+        <div class="credit">Creado por César Espín</div>
+      </div>
+
+      ${showAccountPanel ? renderAccountPanel() : ""}
+    `;
+
+    if (focusHint){
+      const el = app.querySelector(focusHint);
+      if (el){ el.focus(); if (el.select) el.select(); }
+      focusHint = null;
+    }
+    if (showAccountPanel) bindAccountPanel();
+  }
+
+  function renderAccountPanel(){
+    return `
+      <div class="account-panel" data-action="close-account-bg">
+        <div class="account-card" data-stop>
+          <h2>Tu cuenta</h2>
+          <p class="hint">${escapeHtml(session.user.email)}</p>
+          ${accountError ? `<div class="login-error">${escapeHtml(accountError)}</div>` : ""}
+          <form id="password-form">
+            <div class="field">
+              <label for="new-password">Nueva contraseña</label>
+              <input id="new-password" name="password" type="password" minlength="6" required autocomplete="new-password">
+            </div>
+            <div class="row-btns">
+              <button type="button" class="btn btn-ghost btn-sm" data-action="close-account">Cancelar</button>
+              <button type="submit" class="btn btn-primary btn-sm" ${accountBusy ? "disabled" : ""}>${accountBusy ? "Guardando…" : "Cambiar contraseña"}</button>
+            </div>
+          </form>
+          <div class="row-btns">
+            <button class="btn btn-ghost btn-sm" data-action="logout">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
+  function bindAccountPanel(){
+    const bg = app.querySelector('[data-action="close-account-bg"]');
+    if (bg) bg.addEventListener("click", (e) => { if (e.target === bg){ showAccountPanel = false; accountError = ""; render(); } });
+    const form = document.getElementById("password-form");
+    if (form) form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const fd = new FormData(form);
+      accountBusy = true; accountError = ""; render();
+      const { error } = await sb.auth.updateUser({ password: fd.get("password") });
+      accountBusy = false;
+      if (error){ accountError = error.message; render(); }
+      else { showAccountPanel = false; render(); }
+    });
+  }
+
+  function buildStateFromRow(row){
+    const d = row.data || {};
+    return {
+      owner: d.owner || "Isabella",
+      month: d.month || "",
+      currency: d.currency || "EUR",
+      mesada: Number(d.mesada) || 0,
+      fixed: Array.isArray(d.fixed) ? d.fixed : [],
+      categories: Array.isArray(d.categories) ? d.categories : [],
+      transactions: Array.isArray(d.transactions) ? d.transactions : [],
+    };
+  }
+
+  async function loadBudget(){
+    renderLoading("Cargando tu presupuesto…");
+    const { data: memberRows, error: memberErr } = await sb
+      .from("household_members")
+      .select("household_id")
+      .limit(1);
+    if (memberErr || !memberRows || memberRows.length === 0){
+      app.innerHTML = `<div class="center-msg">No encontramos un presupuesto vinculado a tu cuenta. Avisa a César.</div>`;
+      return;
+    }
+    householdId = memberRows[0].household_id;
+
+    const { data: budgetRow, error: budgetErr } = await sb
+      .from("budget_state")
+      .select("data, updated_at")
+      .eq("household_id", householdId)
+      .single();
+    if (budgetErr || !budgetRow){
+      app.innerHTML = `<div class="center-msg">No pudimos cargar los datos del presupuesto.</div>`;
+      return;
+    }
+    state = buildStateFromRow(budgetRow);
+    render();
+    subscribeRealtime();
+  }
+
+  function subscribeRealtime(){
+    if (realtimeChannel) sb.removeChannel(realtimeChannel);
+    realtimeChannel = sb
+      .channel("budget_state_" + householdId)
+      .on("postgres_changes", {
+        event: "UPDATE", schema: "public", table: "budget_state",
+        filter: "household_id=eq." + householdId,
+      }, (payload) => {
+        if (!payload.new) return;
+        const incoming = buildStateFromRow(payload.new);
+        if (JSON.stringify(incoming) !== JSON.stringify(state)){
+          state = incoming;
+          render();
+        }
+      })
+      .subscribe();
+  }
+
+  function scheduleSave(){
+    saveState = "saving";
+    render();
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(doSave, 500);
+  }
+
+  async function doSave(){
+    const { error } = await sb
+      .from("budget_state")
+      .update({ data: state, updated_at: new Date().toISOString() })
+      .eq("household_id", householdId);
+    saveState = error ? "error" : "saved";
+    render();
+  }
+
+  function armDelete(key){
+    pendingDeletes.add(key);
+    render();
+    setTimeout(() => { if (pendingDeletes.has(key)){ pendingDeletes.delete(key); render(); } }, 4000);
+  }
+
+  app.addEventListener("click", (e) => {
+    if (!state) return;
+    const btn = e.target.closest("[data-action]");
+    if (!btn) return;
+    const action = btn.dataset.action;
+
+    if (action === "add-fixed"){
+      const id = uid("f");
+      state.fixed.push({ id, name: "Nuevo gasto", amount: 0 });
+      focusHint = `[data-id="${id}"][data-field="fixed-name"]`;
+      scheduleSave();
+    } else if (action === "delete-fixed"){
+      const id = btn.dataset.id;
+      if (pendingDeletes.has(id)){
+        state.fixed = state.fixed.filter((f) => f.id !== id);
+        pendingDeletes.delete(id);
+        scheduleSave();
+      } else armDelete(id);
+    } else if (action === "add-cat"){
+      const id = uid("c");
+      const slot = state.categories.length % 8;
+      state.categories.push({ id, name: "Nueva categoría", budget: 0, slot });
+      focusHint = `[data-id="${id}"][data-field="cat-name"]`;
+      scheduleSave();
+    } else if (action === "delete-cat"){
+      const id = btn.dataset.id;
+      if (pendingDeletes.has(id)){
+        state.categories = state.categories.filter((c) => c.id !== id);
+        state.transactions = state.transactions.filter((t) => t.catId !== id);
+        pendingDeletes.delete(id);
+        scheduleSave();
+      } else armDelete(id);
+    } else if (action === "delete-tx"){
+      state.transactions = state.transactions.filter((t) => t.id !== btn.dataset.id);
+      scheduleSave();
+    } else if (action === "reset-month"){
+      if (pendingDeletes.has("__reset__")){
+        state.transactions = [];
+        pendingDeletes.delete("__reset__");
+        scheduleSave();
+      } else armDelete("__reset__");
+    } else if (action === "open-account"){
+      showAccountPanel = true; accountError = ""; render();
+    } else if (action === "close-account"){
+      showAccountPanel = false; accountError = ""; render();
+    } else if (action === "logout"){
+      sb.auth.signOut();
+    }
+  });
+
+  app.addEventListener("change", (e) => {
+    if (!state) return;
+    const t = e.target;
+    const field = t.dataset ? t.dataset.field : null;
+    if (!field) return;
+
+    if (field === "owner"){ state.owner = t.value.trim() || "Tú"; scheduleSave(); }
+    else if (field === "month"){ state.month = t.value.trim() || state.month; scheduleSave(); }
+    else if (field === "currency"){ state.currency = t.value; scheduleSave(); }
+    else if (field === "mesada"){ state.mesada = Math.max(0, Number(t.value) || 0); scheduleSave(); }
+    else if (field === "fixed-name"){
+      const f = state.fixed.find((x) => x.id === t.dataset.id);
+      if (f){ f.name = t.value.trim() || "Gasto fijo"; scheduleSave(); }
+    } else if (field === "fixed-amount"){
+      const f = state.fixed.find((x) => x.id === t.dataset.id);
+      if (f){ f.amount = Math.max(0, Number(t.value) || 0); scheduleSave(); }
+    } else if (field === "cat-name"){
+      const c = state.categories.find((x) => x.id === t.dataset.id);
+      if (c){ c.name = t.value.trim() || "Categoría"; scheduleSave(); }
+    } else if (field === "cat-budget"){
+      const c = state.categories.find((x) => x.id === t.dataset.id);
+      if (c){ c.budget = Math.max(0, Number(t.value) || 0); scheduleSave(); }
+    }
+  });
+
+  app.addEventListener("submit", (e) => {
+    const form = e.target.closest('[data-form="add-transaction"]');
+    if (!form || !state) return;
+    e.preventDefault();
+    const fd = new FormData(form);
+    const catId = fd.get("catId");
+    const amount = Number(fd.get("amount"));
+    const date = fd.get("date") || todayISO();
+    const desc = (fd.get("desc") || "").trim();
+    if (!catId || !(amount > 0)) return;
+    state.transactions.push({ id: uid("t"), catId, date, desc, amount });
+    scheduleSave();
+  });
+
+  // ============ Bootstrap ============
+  renderLoading("Cargando…");
+  sb.auth.onAuthStateChange((event, newSession) => {
+    session = newSession;
+    if (session){
+      if (!state) loadBudget();
+    } else {
+      state = null; householdId = null;
+      if (realtimeChannel){ sb.removeChannel(realtimeChannel); realtimeChannel = null; }
+      loginError = ""; loginBusy = false; showAccountPanel = false;
+      renderLogin();
+    }
+  });
+})();
+</script>
+</body>
+</html>
